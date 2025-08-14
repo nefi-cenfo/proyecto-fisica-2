@@ -1,105 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulador de Circuitos R, RL, RC, RLC (Web)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador de Circuitos R, RL, RC, RLC (Web)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Librería Plotly -->
-  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+    <!-- Librería Plotly -->
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="wrap">
-    <h1>Simulador de Circuitos R, RL, RC, RLC — Web</h1>
-    <p class="muted">
-      Puerto 1:1 del script de Python/Tkinter a web.  
-      Soporta <b>respuesta en frecuencia</b> y <b>respuesta en el tiempo</b> con las mismas fórmulas.  
-      Incluye <b>Rs</b> y botón de <b>batería</b>.
-    </p>
+    <!-- Estilos -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Simulador de Circuitos R, RL, RC, RLC — Web</h1>
+      <p class="muted">
+        Soporta <b>respuesta en frecuencia</b> y
+        <b>respuesta en el tiempo</b> con las mismas fórmulas. Incluye
+        <b>Rs</b> y botón de <b>batería</b>.
+      </p>
 
-    <div class="grid">
-      <!-- Panel de parámetros -->
-      <div class="card">
-        <h2>Parámetros</h2>
-        <div class="body">
-          <div class="row">
-            <div>
-              <label>Tipo de circuito</label>
-              <select id="tipo">
-                <option value="R">R</option>
-                <option value="RC" selected>RC</option>
-                <option value="RL">RL</option>
-                <option value="RLC">RLC</option>
-              </select>
+      <div class="grid">
+        <!-- Panel de parámetros -->
+        <div class="card">
+          <h2>Parámetros</h2>
+          <div class="body">
+            <div class="row">
+              <div>
+                <label>Tipo de circuito</label>
+                <select id="tipo">
+                  <option value="R">R</option>
+                  <option value="RC" selected>RC</option>
+                  <option value="RL">RL</option>
+                  <option value="RLC">RLC</option>
+                </select>
+              </div>
+              <div>
+                <label>Modo de simulación</label>
+                <select id="modo">
+                  <option value="Frecuencia" selected>Frecuencia</option>
+                  <option value="Tiempo">Tiempo</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label>Modo de simulación</label>
-              <select id="modo">
-                <option value="Frecuencia" selected>Frecuencia</option>
-                <option value="Tiempo">Tiempo</option>
-              </select>
+
+            <div class="row" style="margin-top: 10px">
+              <div>
+                <label>R (Ω)</label>
+                <input id="R" type="number" step="1" min="0" value="1000" />
+              </div>
+              <div>
+                <label>L (mH)</label>
+                <input id="L" type="number" step="0.1" min="0" value="0" />
+              </div>
             </div>
+
+            <div class="row" style="margin-top: 10px">
+              <div>
+                <label>C (nF)</label>
+                <input id="C" type="number" step="1" min="0" value="100" />
+              </div>
+              <div>
+                <label>Voltaje (V)</label>
+                <input id="V" type="number" step="0.1" min="0" value="5" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 10px">
+              <div>
+                <label>Rs (Ω) amortiguador</label>
+                <input id="Rs" type="number" step="1" min="0" value="0" />
+              </div>
+              <div></div>
+            </div>
+
+            <div class="stack" style="margin-top: 14px">
+              <button id="simular" class="btn">Simular</button>
+              <button id="reset" class="btn secondary">Reset zoom</button>
+              <button
+                id="battery"
+                class="btn secondary"
+                title="Solo aplica en modo Tiempo"
+              >
+                Batería: Conectada
+              </button>
+            </div>
+
+            <div class="kv" style="margin-top: 10px" id="info"></div>
           </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>R (Ω)</label>
-              <input id="R" type="number" step="1" min="0" value="1000" />
-            </div>
-            <div>
-              <label>L (mH)</label>
-              <input id="L" type="number" step="0.1" min="0" value="0" />
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>C (nF)</label>
-              <input id="C" type="number" step="1" min="0" value="100" />
-            </div>
-            <div>
-              <label>Voltaje (V)</label>
-              <input id="V" type="number" step="0.1" min="0" value="5" />
-            </div>
-          </div>
-
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>Rs (Ω) amortiguador</label>
-              <input id="Rs" type="number" step="1" min="0" value="0" />
-            </div>
-            <div></div>
-          </div>
-
-          <div class="stack" style="margin-top:14px;">
-            <button id="simular" class="btn">Simular</button>
-            <button id="reset" class="btn secondary">Reset zoom</button>
-            <button id="battery" class="btn secondary" title="Solo aplica en modo Tiempo">
-              Batería: Conectada
-            </button>
-          </div>
-
-          <div class="kv" style="margin-top:10px;" id="info"></div>
         </div>
-      </div>
 
-      <!-- Panel de gráfica -->
-      <div class="card">
-        <h2>Gráfica</h2>
-        <div class="body">
-          <div id="plot"></div>
+        <!-- Panel de gráfica -->
+        <div class="card">
+          <h2>Gráfica</h2>
+          <div class="body">
+            <div id="plot"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Script principal -->
-  <script src="script.js"></script>
-</body>
+    <!-- Script principal -->
+    <script src="script.js"></script>
+  </body>
 </html>
