@@ -255,12 +255,7 @@ const App = () => {
   // Run simulation when config or battery state changes
   useEffect(() => {
     simular()
-  }, [simular])
-
-  // Initial simulation
-  useEffect(() => {
-    simular()
-  }, [simular])
+  }, [simular, config, connected])
 
   return (
     <div className="wrap">
