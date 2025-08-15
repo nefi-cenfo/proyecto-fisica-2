@@ -177,13 +177,39 @@ const App = () => {
 
       setPlotData([trace])
       setPlotLayout({
-        title: `Respuesta en Frecuencia (${tipo}) — R=${R}Ω, Rs=${Rs}Ω, L=${L}mH, C=${C}nF, V=${V}V`,
-        xaxis: {title: 'Frecuencia (Hz)', type: 'log', color: '#e6e8ef'},
-        yaxis: {title: 'Corriente (A)', color: '#e6e8ef'},
+        title: {
+          text: `Respuesta en Frecuencia (${tipo}) — R=${R}Ω, Rs=${Rs}Ω, L=${L}mH, C=${C}nF, V=${V}V`,
+        },
+        xaxis: {
+          title: {text: 'Frecuencia (Hz)', standoff: 8},
+          type: 'log',
+          color: '#e6e8ef',
+        },
+        yaxis: {title: {text: 'Corriente (A)', standoff: 8}, color: '#e6e8ef'},
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         font: {color: '#e6e8ef'},
+        margin: {l: 60, r: 20, t: 50, b: 60}, // ensures titles aren’t clipped
         shapes,
+        annotations:
+          tipo === 'RLC' && fRes
+            ? [
+                {
+                  x: fRes,
+                  y: Math.max(...amps),
+                  xref: 'x',
+                  yref: 'y',
+                  text: `f_res ≈ ${fRes.toFixed(1)} Hz`,
+                  showarrow: true,
+                  arrowhead: 6,
+                  ax: 30,
+                  ay: -40,
+                  font: {color: '#ff6b6b'},
+                  bgcolor: 'rgba(0,0,0,0.5)',
+                  bordercolor: '#ff6b6b',
+                },
+              ]
+            : [],
       })
 
       setInfo(
@@ -210,18 +236,40 @@ const App = () => {
           y: result.y,
           type: 'scatter',
           mode: 'lines',
-          name: result.label,
+          name: result.label, // legend label
           line: {color: '#FE8D34'},
+          hovertemplate: 't=%{x:.0f} ms<br>y=%{y:.4g}<extra></extra>',
         }
+
+        // endpoint label (optional)
+        const xEnd = result.t_ms[result.t_ms.length - 1]
+        const yEnd = result.y[result.y.length - 1]
 
         setPlotData([trace])
         setPlotLayout({
-          title: `Respuesta en Tiempo (${tipo}) — ${result.titleExtra || ''}`,
-          xaxis: {title: 'Tiempo (ms)', color: '#e6e8ef'},
-          yaxis: {title: yAxisTitle, color: '#e6e8ef'},
+          title: {
+            text: `Respuesta en Tiempo (${tipo}) — ${result.titleExtra || ''}`,
+          },
+          xaxis: {title: {text: 'Tiempo (ms)', standoff: 8}, color: '#e6e8ef'},
+          yaxis: {title: {text: yAxisTitle, standoff: 8}, color: '#e6e8ef'},
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
           font: {color: '#e6e8ef'},
+          margin: {l: 60, r: 20, t: 50, b: 60},
+          annotations: [
+            {
+              x: xEnd,
+              y: yEnd,
+              xref: 'x',
+              yref: 'y',
+              text: `final ≈ ${yEnd.toFixed(3)}`,
+              showarrow: true,
+              arrowhead: 6,
+              ax: 20,
+              ay: -30,
+              bgcolor: 'rgba(0,0,0,0.5)',
+            },
+          ],
         })
 
         setInfo('')
